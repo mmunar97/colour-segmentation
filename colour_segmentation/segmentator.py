@@ -1,6 +1,7 @@
 import numpy
 
 from colour_segmentation.algorithms.fuzzy_sets.amante_trapezoidal_segmentator import AmanteTrapezoidalSegmentator
+from colour_segmentation.algorithms.fuzzy_sets.chamorro_trapezoidal_segmentator import ChamorroTrapezoidalSegmentator
 from colour_segmentation.base.segmentation_algorithm import SegmentationAlgorithm
 from colour_segmentation.base.segmentation_result import SegmentationResult
 
@@ -29,6 +30,8 @@ class Segmentator:
         """
         if method == SegmentationAlgorithm.FUZZY_SET_AMANTE:
             return self.__segment_with_amante_trapezoidal()
+        elif method == SegmentationAlgorithm.FUZZY_SET_CHAMORRO:
+            return self.__segment_with_chamorro_trapezoidal()
 
     def __segment_with_amante_trapezoidal(self) -> SegmentationResult:
         """
@@ -36,3 +39,10 @@ class Segmentator:
         """
         fuzzy_set_amante_segmentator = AmanteTrapezoidalSegmentator(image=self.__image)
         return fuzzy_set_amante_segmentator.segment()
+
+    def __segment_with_chamorro_trapezoidal(self) -> SegmentationResult:
+        """
+        Segments the image with the Chamorro et al fuzzy sets.
+        """
+        fuzzy_set_chamorro_segmentator = ChamorroTrapezoidalSegmentator(image=self.__image)
+        return fuzzy_set_chamorro_segmentator.segment()
