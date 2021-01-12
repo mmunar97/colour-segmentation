@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='colour-segmentation',
+    name='colour_segmentation',
     version='1.0',
-    packages=['colour-segmentation'],
+    packages=['colour_segmentation'],
     url='https://github.com/mmunar97/colour-segmentation',
     license='mit',
     author='marcmunar',
