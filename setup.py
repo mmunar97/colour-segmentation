@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='colour_segmentation',
+    name='colour-segmentation',
     version='1.0',
-    packages=['colour_segmentation'],
-    url='https://github.com/mmunar97/inPYintin',
+    packages=['colour-segmentation'],
+    url='https://github.com/mmunar97/colour-segmentation',
     license='mit',
     author='marcmunar',
     author_email='marc.munar@uib.es',
