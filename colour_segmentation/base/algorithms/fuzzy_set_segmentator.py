@@ -13,7 +13,7 @@ class FuzzySetSegmentator:
         Initializes the base object for the segmentation using the membership functions of fuzzy sets.
 
         Args:
-            image: A three-dimensional numpy array, representing the image to be inpainted which entries are in 0...255
+            image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
             class_representation: A dictionary with the representation colour of each class. Each entry in the dictionary
                                   must be an integer as the key, and a RGB tuple as value.
@@ -49,3 +49,17 @@ class FuzzySetSegmentator:
             segmentation[classification == class_value] = self.class_representation[class_value]
 
         return segmentation[:, :, ::-1]
+
+    def get_red_proportion(self, segmentation: numpy.ndarray):
+        """
+        Computes the proportion of red pixels in the segmentation.
+
+        Args:
+            segmentation: A three-dimensional numpy array, representing the segmented image. Each entry contains the
+                          representation colour of the original pixel.
+
+        Returns:
+            A float, representing the proportion of redness.
+        """
+        red_pixels = numpy.any(segmentation == [255, 33, 36], axis=-1)
+        return red_pixels.sum() / (segmentation.shape[0] * segmentation.shape[1])

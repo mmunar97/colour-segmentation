@@ -67,9 +67,13 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
                                    green_membership, greencyan_membership, cyan_membership, cyanblue_membership,
                                    blue_membership, bluemagenta_membership, magenta_membership,
                                    magentared_membership], axis=2)
-        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
 
-        return SegmentationResult(segmented_image=segmentation, elapsed_time=time.time() - elapsed_time)
+        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+        elapsed_time = elapsed_time - time.time()
+
+        return SegmentationResult(segmented_image=segmentation,
+                                  elapsed_time=elapsed_time,
+                                  red_proportion=self.get_red_proportion(segmentation))
 
     @staticmethod
     def __fuzzy_trapezoidal_red(h: float) -> float:

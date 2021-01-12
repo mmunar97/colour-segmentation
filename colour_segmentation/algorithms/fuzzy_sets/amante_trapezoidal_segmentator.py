@@ -59,9 +59,13 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
         memberships = numpy.stack([red_membership, brown_membership, orange_membership, yellow_membership,
                                    green_membership, cyan_membership, blue_membership,
                                    purple_membership, pink_membership], axis=2)
-        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
 
-        return SegmentationResult(segmented_image=segmentation, elapsed_time=time.time()-elapsed_time)
+        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+        elapsed_time = elapsed_time-time.time()
+
+        return SegmentationResult(segmented_image=segmentation,
+                                  elapsed_time=elapsed_time,
+                                  red_proportion=self.get_red_proportion(segmentation))
 
     @staticmethod
     def __fuzzy_trapezoidal_red(h: float) -> float:
