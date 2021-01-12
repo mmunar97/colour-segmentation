@@ -3,6 +3,7 @@ import numpy
 from colour_segmentation.algorithms.fuzzy_sets.amante_trapezoidal_segmentator import AmanteTrapezoidalSegmentator
 from colour_segmentation.algorithms.fuzzy_sets.chamorro_trapezoidal_segmentator import ChamorroTrapezoidalSegmentator
 from colour_segmentation.algorithms.fuzzy_sets.liu_wang_trapezoidal_segmentator import LiuWangTrapezoidalSegmentator
+from colour_segmentation.algorithms.fuzzy_sets.shamir_triangular_segmentator import ShamirTriangularSegmentator
 from colour_segmentation.base.segmentation_algorithm import SegmentationAlgorithm
 from colour_segmentation.base.segmentation_result import SegmentationResult
 
@@ -35,6 +36,8 @@ class Segmentator:
             return self.__segment_with_chamorro_trapezoidal()
         elif method == SegmentationAlgorithm.FUZZY_SET_LIU:
             return self.__segment_with_liu_trapezoidal()
+        elif method == SegmentationAlgorithm.FUZZY_SET_SHAMIR:
+            return self.__segment_with_shamir_triangular()
 
     def __segment_with_amante_trapezoidal(self) -> SegmentationResult:
         """
@@ -56,3 +59,10 @@ class Segmentator:
         """
         fuzzy_set_liu_segmentator = LiuWangTrapezoidalSegmentator(image=self.__image)
         return fuzzy_set_liu_segmentator.segment()
+
+    def __segment_with_shamir_triangular(self) -> SegmentationResult:
+        """
+        Segments the image with the Shamir fuzzy sets.
+        """
+        fuzzy_set_shamir_segmentator = ShamirTriangularSegmentator(image=self.__image)
+        return fuzzy_set_shamir_segmentator.segment()

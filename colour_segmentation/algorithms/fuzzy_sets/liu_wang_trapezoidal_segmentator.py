@@ -13,7 +13,7 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         Initializes the object that segments a given image with the Liu-Wang fuzzy sets.
 
         Args:
-            image: A three-dimensional numpy array, representing the image to be inpainted which entries are in 0...255
+            image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
         """
         super(LiuWangTrapezoidalSegmentator, self).__init__(image=image,

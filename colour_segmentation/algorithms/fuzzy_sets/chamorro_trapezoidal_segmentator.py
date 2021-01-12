@@ -14,7 +14,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         Initializes the object that segments a given image with the Amante-Fonseca fuzzy sets.
 
         Args:
-            image: A three-dimensional numpy array, representing the image to be inpainted which entries are in 0...255
+            image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
         """
         super(ChamorroTrapezoidalSegmentator, self).__init__(image=image,
