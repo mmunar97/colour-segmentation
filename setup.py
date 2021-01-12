@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='colour_segmentation',
-    version='1.0',
+    version='1.1',
     packages=['colour_segmentation'],
     url='https://github.com/mmunar97/colour-segmentation',
     license='mit',
