@@ -33,7 +33,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                  11: numpy.array([254, 6, 180])
                                                              })
 
-    def segment(self):
+    def segment(self) -> SegmentationResult:
         """
         Segments the image using the Chamorro et al membership functions of different fuzzy sets.
 
@@ -72,7 +72,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         return SegmentationResult(segmented_image=segmentation, elapsed_time=time.time() - elapsed_time)
 
     @staticmethod
-    def __fuzzy_trapezoidal_red(h: float):
+    def __fuzzy_trapezoidal_red(h: float) -> float:
         """
         Computes the membership function of the hue value of the red fuzzy set.
 
@@ -92,7 +92,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_orange(h: float):
+    def __fuzzy_trapezoidal_orange(h: float) -> float:
         """
         Computes the membership function of the hue value of the orange fuzzy set.
 
@@ -112,7 +112,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_yellow(h: float):
+    def __fuzzy_trapezoidal_yellow(h: float) -> float:
         """
         Computes the membership function of the hue value of the yellow fuzzy set.
 
@@ -132,7 +132,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_yellowgreen(h: float):
+    def __fuzzy_trapezoidal_yellowgreen(h: float) -> float:
         """
         Computes the membership function of the hue value of the yellow-green fuzzy set.
 
@@ -152,7 +152,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_green(h: float):
+    def __fuzzy_trapezoidal_green(h: float) -> float:
         """
         Computes the membership function of the hue value of the green fuzzy set.
 
@@ -172,7 +172,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_greencyan(h: float):
+    def __fuzzy_trapezoidal_greencyan(h: float) -> float:
         """
         Computes the membership function of the hue value of the green-cyan fuzzy set.
 
@@ -192,7 +192,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_cyan(h: float):
+    def __fuzzy_trapezoidal_cyan(h: float) -> float:
         """
         Computes the membership function of the hue value of the cyan fuzzy set.
 
@@ -212,7 +212,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_cyanblue(h: float):
+    def __fuzzy_trapezoidal_cyanblue(h: float) -> float:
         """
         Computes the membership function of the hue value of the cyan-blue fuzzy set.
 
@@ -232,7 +232,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_blue(h: float):
+    def __fuzzy_trapezoidal_blue(h: float) -> float:
         """
         Computes the membership function of the hue value of the blue fuzzy set.
 
@@ -252,7 +252,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_bluemagenta(h: float):
+    def __fuzzy_trapezoidal_bluemagenta(h: float) -> float:
         """
         Computes the membership function of the hue value of the blue-magenta fuzzy set.
 
@@ -272,7 +272,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_magenta(h: float):
+    def __fuzzy_trapezoidal_magenta(h: float) -> float:
         """
         Computes the membership function of the hue value of the magenta fuzzy set.
 
@@ -292,7 +292,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_magentared(h: float):
+    def __fuzzy_trapezoidal_magentared(h: float) -> float:
         """
         Computes the membership function of the hue value of the magenta-red fuzzy set.
 

@@ -27,7 +27,7 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                 6: numpy.array([158, 80, 159])
                                                             })
 
-    def segment(self):
+    def segment(self) -> SegmentationResult:
         """
         Segments the image using the liu-Wang membership functions of different fuzzy sets.
 

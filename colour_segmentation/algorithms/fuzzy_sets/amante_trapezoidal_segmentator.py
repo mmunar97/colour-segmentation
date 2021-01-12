@@ -29,7 +29,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                8: numpy.array([255, 64, 255])
                                                            })
 
-    def segment(self):
+    def segment(self) -> SegmentationResult:
         """
         Segments the image using the Amante-Fonseca's membership functions of different fuzzy sets.
 
@@ -64,7 +64,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
         return SegmentationResult(segmented_image=segmentation, elapsed_time=time.time()-elapsed_time)
 
     @staticmethod
-    def __fuzzy_trapezoidal_red(h: float):
+    def __fuzzy_trapezoidal_red(h: float) -> float:
         """
         Computes the membership function of the hue value of the red fuzzy set.
 
@@ -84,7 +84,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_brown(h: float):
+    def __fuzzy_trapezoidal_brown(h: float) -> float:
         """
         Computes the membership function of the hue value of the brown fuzzy set.
 
@@ -104,7 +104,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_orange(h: float):
+    def __fuzzy_trapezoidal_orange(h: float) -> float:
         """
         Computes the membership function of the hue value of the orange fuzzy set.
 
@@ -124,7 +124,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_yellow(h: float):
+    def __fuzzy_trapezoidal_yellow(h: float) -> float:
         """
         Computes the membership function of the hue value of the yellow fuzzy set.
 
@@ -144,7 +144,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_green(h: float):
+    def __fuzzy_trapezoidal_green(h: float) -> float:
         """
         Computes the membership function of the hue value of the green fuzzy set.
 
@@ -164,7 +164,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_cyan(h: float):
+    def __fuzzy_trapezoidal_cyan(h: float) -> float:
         """
         Computes the membership function of the hue value of the cyan fuzzy set.
 
@@ -184,7 +184,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_blue(h: float):
+    def __fuzzy_trapezoidal_blue(h: float) -> float:
         """
         Computes the membership function of the hue value of the blue fuzzy set.
 
@@ -204,7 +204,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_purple(h: float):
+    def __fuzzy_trapezoidal_purple(h: float) -> float:
         """
         Computes the membership function of the hue value of the purple fuzzy set.
 
@@ -224,7 +224,7 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_trapezoidal_pink(h: float):
+    def __fuzzy_trapezoidal_pink(h: float) -> float:
         """
         Computes the membership function of the hue value of the pink fuzzy set.
 

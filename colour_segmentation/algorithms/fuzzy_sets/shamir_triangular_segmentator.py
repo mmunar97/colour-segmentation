@@ -30,7 +30,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
                                                               9: numpy.array([255, 0, 255]),
                                                           })
 
-    def segment(self):
+    def segment(self) -> SegmentationResult:
         """
         Segments the image using the Shamir membership functions of different fuzzy sets.
 
@@ -62,7 +62,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         return SegmentationResult(segmented_image=segmentation, elapsed_time=time.time() - elapsed_time)
 
     @staticmethod
-    def __fuzzy_triangular_red(h: float):
+    def __fuzzy_triangular_red(h: float) -> float:
         """
         Computes the membership function of the hue value of the red fuzzy set.
 
@@ -80,7 +80,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_darkorange(h: float):
+    def __fuzzy_triangular_darkorange(h: float) -> float:
         """
         Computes the membership function of the hue value of the dark orange fuzzy set.
 
@@ -98,7 +98,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_lightorange(h: float):
+    def __fuzzy_triangular_lightorange(h: float) -> float:
         """
         Computes the membership function of the hue value of the light orange fuzzy set.
 
@@ -116,7 +116,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_yellow(h: float):
+    def __fuzzy_triangular_yellow(h: float) -> float:
         """
         Computes the membership function of the hue value of the yellow fuzzy set.
 
@@ -134,7 +134,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_lightgreen(h: float):
+    def __fuzzy_triangular_lightgreen(h: float) -> float:
         """
         Computes the membership function of the hue value of the light green fuzzy set.
 
@@ -152,7 +152,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_darkgreen(h: float):
+    def __fuzzy_triangular_darkgreen(h: float) -> float:
         """
         Computes the membership function of the hue value of the dark green fuzzy set.
 
@@ -170,7 +170,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_aqua(h: float):
+    def __fuzzy_triangular_aqua(h: float) -> float:
         """
         Computes the membership function of the hue value of the aqua fuzzy set.
 
@@ -188,7 +188,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_blue(h: float):
+    def __fuzzy_triangular_blue(h: float) -> float:
         """
         Computes the membership function of the hue value of the blue fuzzy set.
 
@@ -206,7 +206,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_darkpurple(h: float):
+    def __fuzzy_triangular_darkpurple(h: float) -> float:
         """
         Computes the membership function of the hue value of the dark purple fuzzy set.
 
@@ -224,7 +224,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             return 0
 
     @staticmethod
-    def __fuzzy_triangular_lightpurple(h: float):
+    def __fuzzy_triangular_lightpurple(h: float) -> float:
         """
         Computes the membership function of the hue value of the light purple fuzzy set.
 

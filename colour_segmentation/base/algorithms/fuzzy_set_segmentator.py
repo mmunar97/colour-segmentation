@@ -3,6 +3,8 @@ import numpy
 from skimage import img_as_float
 from typing import Dict
 
+from colour_segmentation.base.segmentation_result import SegmentationResult
+
 
 class FuzzySetSegmentator:
 
@@ -19,7 +21,7 @@ class FuzzySetSegmentator:
         self.image = image
         self.class_representation = class_representation
 
-    def segment(self):
+    def segment(self) -> SegmentationResult:
         pass
 
     def get_float_image(self) -> numpy.ndarray:
