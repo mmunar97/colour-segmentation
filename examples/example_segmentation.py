@@ -5,7 +5,7 @@ from colour_segmentation.segmentator import Segmentator
 
 if __name__ == "__main__":
 
-    image = cv2.imread(r"C:\Users\Usuario\Desktop\InpaintingDemo\mumford_shah_clean.png")
+    image = cv2.imread(r"assets/tree_image.jpg")
 
     segmentator = Segmentator(image=image)
 

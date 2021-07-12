@@ -1,7 +1,7 @@
 import numpy
 
 from skimage import img_as_float
-from typing import Dict
+from typing import Dict, List
 
 from colour_segmentation.base.segmentation_result import SegmentationResult
 
@@ -21,7 +21,7 @@ class FuzzySetSegmentator:
         self.image = image
         self.class_representation = class_representation
 
-    def segment(self) -> SegmentationResult:
+    def segment(self, **kwargs) -> SegmentationResult:
         pass
 
     def get_float_image(self) -> numpy.ndarray:
@@ -50,16 +50,20 @@ class FuzzySetSegmentator:
 
         return segmentation[:, :, ::-1]
 
-    def get_red_proportion(self, segmentation: numpy.ndarray):
+    def get_red_proportion(self, segmentation: numpy.ndarray, red_representation=None):
         """
         Computes the proportion of red pixels in the segmentation.
 
         Args:
             segmentation: A three-dimensional numpy array, representing the segmented image. Each entry contains the
                           representation colour of the original pixel.
+            red_representation: A list of integers, representing the RGB representation of the red colour.
 
         Returns:
             A float, representing the proportion of redness.
         """
-        red_pixels = numpy.any(segmentation == [255, 33, 36], axis=-1)
+        if red_representation is None:
+            red_representation = [255, 33, 36]
+
+        red_pixels = numpy.any(segmentation == red_representation, axis=-1)
         return red_pixels.sum() / (segmentation.shape[0] * segmentation.shape[1])

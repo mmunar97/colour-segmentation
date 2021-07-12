@@ -29,9 +29,14 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                8: numpy.array([255, 64, 255])
                                                            })
 
-    def segment(self) -> SegmentationResult:
+    def segment(self, remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
-        Segments the image using the Amante-Fonseca's membership functions of different fuzzy sets.
+        Segments the image using the Amante-Fonseca's membership functions of different fuzzy sets. The method considers
+        nine chromatic colour classes, and three achromatic colour classes. Depending on certain conditions, the colours
+        present in the image are achromatic colours (black, grey and white).
+
+        Args:
+            remove_achromatic_colours: A boolean, indicating if the achromatic colours have to be removed in the image.
 
         References:
             Amante JC & Fonseca MJ (2012)
@@ -45,6 +50,8 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
 
         hsv_image = color.rgb2hsv(self.get_float_image())
         h_channel = 360*hsv_image[:, :, 0]
+        s_channel = hsv_image[:, :, 1]
+        v_channel = hsv_image[:, :, 2]
 
         red_membership = numpy.vectorize(AmanteTrapezoidalSegmentator.__fuzzy_trapezoidal_red)(h_channel)
         brown_membership = numpy.vectorize(AmanteTrapezoidalSegmentator.__fuzzy_trapezoidal_brown)(h_channel)
@@ -61,11 +68,43 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
                                    purple_membership, pink_membership], axis=2)
 
         segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+
+        if remove_achromatic_colours:
+            black_pixels = self.__get_black_pixels(v_channel)
+            gray_pixels = self.__get_gray_pixels(s_channel, v_channel)
+            white_pixels = self.__get_white_pixels(s_channel, v_channel)
+
+            segmentation = AmanteTrapezoidalSegmentator.__graw_achromatic_classes(chromatic_segmentation=segmentation,
+                                                                                  black_pixels=black_pixels,
+                                                                                  gray_pixels=gray_pixels,
+                                                                                  white_pixels=white_pixels)
+
         elapsed_time = elapsed_time-time.time()
 
         return SegmentationResult(segmented_image=segmentation,
                                   elapsed_time=elapsed_time,
                                   red_proportion=self.get_red_proportion(segmentation))
+
+    @staticmethod
+    def __graw_achromatic_classes(chromatic_segmentation: numpy.ndarray, black_pixels: numpy.ndarray,
+                                  gray_pixels: numpy.ndarray, white_pixels: numpy.ndarray):
+        """
+        Draws over the segmented image the achromatic colours.
+
+        Args:
+            chromatic_segmentation: A three-dimensional numpy array, representing the chromatic segmentation.
+            black_pixels: A numpy array of booleans, representing the position of the pixels marked as black.
+            gray_pixels: A numpy array of booleans, representing the position of the pixels marked as gray.
+            white_pixels: A numpy array of booleans, representing the position of the pixels marked as white.
+
+        Returns:
+            A three-dimensional numpy array, representing the chromatic segmentation including the achromatic colours.
+        """
+        chromatic_segmentation[black_pixels, :] = [0, 0, 0]
+        chromatic_segmentation[white_pixels, :] = [255, 255, 255]
+        chromatic_segmentation[gray_pixels, :] = [128, 128, 128]
+
+        return chromatic_segmentation
 
     @staticmethod
     def __fuzzy_trapezoidal_red(h: float) -> float:
@@ -246,3 +285,50 @@ class AmanteTrapezoidalSegmentator(FuzzySetSegmentator):
             return -0.07 * h + 23.33
         else:
             return 0
+
+    @staticmethod
+    def __get_white_pixels(s_channel: numpy.ndarray, v_channel: numpy.ndarray) -> numpy.ndarray:
+        """
+        Calculates the mask for pixels that are marked as white. To do this, check which pixels have a value of V
+        greater than 0.81 and a value of S less than 0.14.
+
+        Args:
+            s_channel: A numpy array, representing the matrix of the saturation.
+            v_channel: A numpy array, representing the matrix of the values.
+
+        Returns:
+            A numpy array of booleans, marking with 1 if the pixel is white, or with 0 in other case.
+        """
+        return numpy.logical_and(v_channel > 0.81, s_channel <= 0.14)
+
+    @staticmethod
+    def __get_black_pixels(v_channel: numpy.ndarray) -> numpy.ndarray:
+        """
+        Calculates the mask for pixels that are marked as black. To do this, check which pixels have a value of V
+        less than 0.19.
+
+        Args:
+            v_channel: A numpy array, representing the matrix of the values.
+
+        Returns:
+            A numpy array of booleans, marking with 1 if the pixel is black, or with 0 in other case.
+        """
+        return v_channel <= 0.19
+
+    @staticmethod
+    def __get_gray_pixels(s_channel: numpy.ndarray, v_channel: numpy.ndarray) -> numpy.ndarray:
+        """
+        Calculates the mask for pixels that are marked as gray. To do this, check which pixels have a value of V
+        less than 0.81 and greather than 0.19, and a value of S less than 0.14.
+
+        Args:
+            s_channel: A numpy array, representing the matrix of the saturation.
+            v_channel: A numpy array, representing the matrix of the values.
+
+        Returns:
+            A numpy array of booleans, marking with 1 if the pixel is gray, or with 0 in other case.
+        """
+        v1 = v_channel <= 0.81
+        v2 = 0.19 < v_channel
+
+        return numpy.logical_and(numpy.logical_and(v1, v2), s_channel <= 0.14)
