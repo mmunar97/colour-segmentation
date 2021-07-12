@@ -20,7 +20,7 @@ class Segmentator:
         """
         self.__image = image
 
-    def segment(self, method: SegmentationAlgorithm) -> SegmentationResult:
+    def segment(self, method: SegmentationAlgorithm, **kwargs) -> SegmentationResult:
         """
         Segments the image with a certain method.
 
@@ -31,7 +31,7 @@ class Segmentator:
             A SegmentationResult object, containing the classification of each pixel and the elapsed time.
         """
         if method == SegmentationAlgorithm.FUZZY_SET_AMANTE:
-            return self.__segment_with_amante_trapezoidal()
+            return self.__segment_with_amante_trapezoidal(**kwargs)
         elif method == SegmentationAlgorithm.FUZZY_SET_CHAMORRO:
             return self.__segment_with_chamorro_trapezoidal()
         elif method == SegmentationAlgorithm.FUZZY_SET_LIU:
@@ -39,12 +39,12 @@ class Segmentator:
         elif method == SegmentationAlgorithm.FUZZY_SET_SHAMIR:
             return self.__segment_with_shamir_triangular()
 
-    def __segment_with_amante_trapezoidal(self) -> SegmentationResult:
+    def __segment_with_amante_trapezoidal(self, **kwargs) -> SegmentationResult:
         """
         Segments the image with the Amante-Fonseca fuzzy sets.
         """
         fuzzy_set_amante_segmentator = AmanteTrapezoidalSegmentator(image=self.__image)
-        return fuzzy_set_amante_segmentator.segment()
+        return fuzzy_set_amante_segmentator.segment(**kwargs)
 
     def __segment_with_chamorro_trapezoidal(self) -> SegmentationResult:
         """
