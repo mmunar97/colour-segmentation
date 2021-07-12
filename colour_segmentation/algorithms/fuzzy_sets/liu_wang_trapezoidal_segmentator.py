@@ -27,7 +27,7 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                 6: numpy.array([158, 80, 159])
                                                             })
 
-    def segment(self) -> SegmentationResult:
+    def segment(self, apply_colour_correction: bool = True) -> SegmentationResult:
         """
         Segments the image using the liu-Wang membership functions of different fuzzy sets.
 
@@ -41,7 +41,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         """
         elapsed_time = time.time()
 
-        hsv_image = color.rgb2hsv(self.get_float_image())
+        image = self.get_float_image()
+        if apply_colour_correction:
+            image = self.__apply_color_correction()
+
+        hsv_image = color.rgb2hsv(image)
         h_channel = 360 * hsv_image[:, :, 0]
 
         red_membership = numpy.vectorize(LiuWangTrapezoidalSegmentator.__fuzzy_trapezoidal_red)(h_channel)
@@ -61,6 +65,36 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         return SegmentationResult(segmented_image=segmentation,
                                   elapsed_time=elapsed_time,
                                   red_proportion=self.get_red_proportion(segmentation))
+
+    def __apply_color_correction(self):
+        """
+        Applies the color correction method, normalizing each color channel of the image. The method computes the
+        mean of each channel, and then computes the mean of the three means. Finally, the normalization is carried out
+        multiplying each channel by the factor K/N, where K is the mean of the three means and N is the mean of each
+        channel.
+
+        By construction, the method may cause overflow, since the scale factor can be greater than 1. In that cases,
+        all the values are set to 1.
+
+        Returns:
+            A numpy array, representing the balanced image.
+        """
+        image = self.get_float_image()
+
+        red_channel = image[:, :, 0]
+        green_channel = image[:, :, 1]
+        blue_channel = image[:, :, 2]
+
+        balance_average = (numpy.mean(red_channel)+numpy.mean(green_channel)+numpy.mean(blue_channel))/3
+
+        balanced_red = (balance_average / numpy.mean(red_channel)) * red_channel
+        balanced_red[balanced_red > 1] = 1
+        balanced_green = (balance_average / numpy.mean(green_channel)) * green_channel
+        balanced_green[balanced_green > 1] = 1
+        balanced_blue = (balance_average / numpy.mean(blue_channel)) * blue_channel
+        balanced_blue[balanced_blue > 1] = 1
+
+        return numpy.stack([balanced_red, balanced_green, balanced_blue], axis=2)
 
     @staticmethod
     def __fuzzy_trapezoidal_red(h: float) -> float:

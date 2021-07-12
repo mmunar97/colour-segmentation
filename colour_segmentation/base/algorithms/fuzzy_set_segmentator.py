@@ -22,6 +22,9 @@ class FuzzySetSegmentator:
         self.class_representation = class_representation
 
     def segment(self, **kwargs) -> SegmentationResult:
+        """
+        A generic method to compute the colour segmentation of an RGB image.
+        """
         pass
 
     def get_float_image(self) -> numpy.ndarray:
