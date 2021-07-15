@@ -27,13 +27,15 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                 6: numpy.array([158, 80, 159])
                                                             })
 
-    def segment(self, apply_colour_correction: bool = True) -> SegmentationResult:
+    def segment(self, apply_colour_correction: bool = True,
+                remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
         Segments the image using the liu-Wang membership functions of different fuzzy sets.
 
         Args:
             apply_colour_correction: A boolean, indicating if the Gray World balance has to be applied to the original
                                      image.
+            remove_achromatic_colours: A boolean, indicating if the achromatic colours have to be removed in the image.
 
         References:
             Liu C, Wang L. (2016)
@@ -71,6 +73,14 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
                                    cyan_membership, blue_membership, purple_membership], axis=2)
 
         segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+
+        if remove_achromatic_colours:
+            s_channel = hsv_image[:, :, 1]
+            v_channel = hsv_image[:, :, 2]
+
+            segmentation = self.draw_achromatic_classes(s_channel=s_channel,
+                                                        v_channel=v_channel,
+                                                        chromatic_segmentation=segmentation)
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
