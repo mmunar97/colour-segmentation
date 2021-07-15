@@ -1,4 +1,4 @@
-from skimage import color
+import cv2
 import numpy
 import time
 
@@ -30,34 +30,56 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
                                                               9: numpy.array([255, 0, 255]),
                                                           })
 
-    def segment(self) -> SegmentationResult:
+    def segment(self, remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
         Segments the image using the Shamir membership functions of different fuzzy sets.
+
+        Args:
+            remove_achromatic_colours: A boolean, indicating if the achromatic colours have to be removed in the image.
 
         Returns:
             A SegmentationResult object, containing the classification of each pixel and the elapsed time.
         """
         elapsed_time = time.time()
 
-        hsv_image = color.rgb2hsv(self.get_float_image())
-        h_channel = 360 * hsv_image[:, :, 0]
+        hsv_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+        h_channel = 2 * (hsv_image[:, :, 0].astype(float))
 
-        red_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_red)(h_channel)
-        darkorange_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkorange)(h_channel)
-        lightorange_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightorange)(h_channel)
-        yellow_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_yellow)(h_channel)
-        lightgreen_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightgreen)(h_channel)
-        darkgreen_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkgreen)(h_channel)
-        aqua_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_aqua)(h_channel)
-        blue_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_blue)(h_channel)
-        darkpurple_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkpurple)(h_channel)
-        lightpurple_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightpurple)(h_channel)
+        red_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_red,
+                                         otypes=[numpy.float])(h_channel)
+        darkorange_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkorange,
+                                                otypes=[numpy.float])(h_channel)
+        lightorange_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightorange,
+                                                 otypes=[numpy.float])(h_channel)
+        yellow_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_yellow,
+                                            otypes=[numpy.float])(h_channel)
+        lightgreen_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightgreen,
+                                                otypes=[numpy.float])(h_channel)
+        darkgreen_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkgreen,
+                                               otypes=[numpy.float])(h_channel)
+        aqua_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_aqua,
+                                          otypes=[numpy.float])(h_channel)
+        blue_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_blue,
+                                          otypes=[numpy.float])(h_channel)
+        darkpurple_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_darkpurple,
+                                                otypes=[numpy.float])(h_channel)
+        lightpurple_membership = numpy.vectorize(ShamirTriangularSegmentator.__fuzzy_triangular_lightpurple,
+                                                 otypes=[numpy.float])(h_channel)
 
         memberships = numpy.stack([red_membership, darkorange_membership, lightorange_membership, yellow_membership,
                                    lightgreen_membership, darkgreen_membership, aqua_membership,
                                    blue_membership, darkpurple_membership, lightpurple_membership], axis=2)
 
         segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+
+        if remove_achromatic_colours:
+            s_channel = (hsv_image[:, :, 1].astype(float)) / 255
+            v_channel = (hsv_image[:, :, 2].astype(float)) / 255
+
+            segmentation = self.draw_achromatic_classes(s_channel=s_channel,
+                                                        v_channel=v_channel,
+                                                        chromatic_segmentation=segmentation)
+
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
@@ -80,7 +102,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 330 <= h <= 360:
             return -11 + h / 30
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_darkorange(h: float) -> float:
@@ -98,7 +120,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 30 <= h <= 45:
             return 3 - h / 15
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_lightorange(h: float) -> float:
@@ -116,7 +138,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 45 <= h <= 60:
             return 4 - h / 15
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_yellow(h: float) -> float:
@@ -134,7 +156,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 60 <= h <= 90:
             return 3 - h / 30
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_lightgreen(h: float) -> float:
@@ -152,7 +174,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 75 <= h <= 120:
             return 8 / 3 - h / 45
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_darkgreen(h: float) -> float:
@@ -170,7 +192,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 120 <= h <= 180:
             return 3 - h / 60
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_aqua(h: float) -> float:
@@ -188,7 +210,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 180 <= h <= 240:
             return 4 - h / 60
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_blue(h: float) -> float:
@@ -206,7 +228,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 240 <= h <= 300:
             return 5 - h / 60
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_darkpurple(h: float) -> float:
@@ -224,7 +246,7 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elif 300 <= h <= 330:
             return 11 - h / 30
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_triangular_lightpurple(h: float) -> float:
@@ -240,6 +262,6 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         if 300 <= h <= 330:
             return -10 + h / 30
         elif 330 <= h <= 360:
-            return 12 - h / 30;
+            return 12 - h / 30
         else:
-            return 0
+            return 0.0

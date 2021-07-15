@@ -1,8 +1,7 @@
+import cv2
 import numpy
-
 import time
 from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
-from skimage import color
 
 from colour_segmentation.base.segmentation_result import SegmentationResult
 
@@ -33,9 +32,12 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
                                                                  11: numpy.array([254, 6, 180])
                                                              })
 
-    def segment(self) -> SegmentationResult:
+    def segment(self, remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
         Segments the image using the Chamorro et al membership functions of different fuzzy sets.
+
+        Args:
+            remove_achromatic_colours: A boolean, indicating if the achromatic colours have to be removed in the image.
 
         References:
             Chamorro-Martínez J, Medina JM, Barranco C, Galán-Perales E, Soto-Hidalgo J. (2007)
@@ -47,21 +49,33 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         """
         elapsed_time = time.time()
 
-        hsv_image = color.rgb2hsv(self.get_float_image())
-        h_channel = 360 * hsv_image[:, :, 0]
+        hsv_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+        h_channel = 2 * (hsv_image[:, :, 0].astype(float))
 
-        red_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_red)(h_channel)
-        orange_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_orange)(h_channel)
-        yellow_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_yellow)(h_channel)
-        yellowgreen_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_yellowgreen)(h_channel)
-        green_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_green)(h_channel)
-        greencyan_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_greencyan)(h_channel)
-        cyan_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_cyan)(h_channel)
-        cyanblue_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_cyanblue)(h_channel)
-        blue_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_blue)(h_channel)
-        bluemagenta_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_bluemagenta)(h_channel)
-        magenta_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_magenta)(h_channel)
-        magentared_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_magentared)(h_channel)
+        red_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_red,
+                                         otypes=[numpy.float])(h_channel)
+        orange_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_orange,
+                                            otypes=[numpy.float])(h_channel)
+        yellow_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_yellow,
+                                            otypes=[numpy.float])(h_channel)
+        yellowgreen_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_yellowgreen,
+                                                 otypes=[numpy.float])(h_channel)
+        green_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_green,
+                                           otypes=[numpy.float])(h_channel)
+        greencyan_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_greencyan,
+                                               otypes=[numpy.float])(h_channel)
+        cyan_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_cyan,
+                                          otypes=[numpy.float])(h_channel)
+        cyanblue_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_cyanblue,
+                                              otypes=[numpy.float])(h_channel)
+        blue_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_blue,
+                                          otypes=[numpy.float])(h_channel)
+        bluemagenta_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_bluemagenta,
+                                                 otypes=[numpy.float])(h_channel)
+        magenta_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_magenta,
+                                             otypes=[numpy.float])(h_channel)
+        magentared_membership = numpy.vectorize(ChamorroTrapezoidalSegmentator.__fuzzy_trapezoidal_magentared,
+                                                otypes=[numpy.float])(h_channel)
 
         memberships = numpy.stack([red_membership, orange_membership, yellow_membership, yellowgreen_membership,
                                    green_membership, greencyan_membership, cyan_membership, cyanblue_membership,
@@ -69,6 +83,15 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
                                    magentared_membership], axis=2)
 
         segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+
+        if remove_achromatic_colours:
+            s_channel = (hsv_image[:, :, 1].astype(float)) / 255
+            v_channel = (hsv_image[:, :, 2].astype(float)) / 255
+
+            segmentation = self.draw_achromatic_classes(s_channel=s_channel,
+                                                        v_channel=v_channel,
+                                                        chromatic_segmentation=segmentation)
+
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
@@ -93,7 +116,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 340 <= h <= 350:
             return h / 10 - 34
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_orange(h: float) -> float:
@@ -113,7 +136,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 40 <= h <= 50:
             return -h / 10 + 5
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_yellow(h: float) -> float:
@@ -133,7 +156,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 70 <= h <= 80:
             return -h / 10 + 8
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_yellowgreen(h: float) -> float:
@@ -153,7 +176,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 100 <= h <= 110:
             return -h / 10 + 11
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_green(h: float) -> float:
@@ -173,7 +196,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 130 <= h <= 140:
             return -h / 10 + 14
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_greencyan(h: float) -> float:
@@ -193,7 +216,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 160 <= h <= 170:
             return -h / 10 + 17
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_cyan(h: float) -> float:
@@ -213,7 +236,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 190 <= h <= 200:
             return -h / 10 + 20
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_cyanblue(h: float) -> float:
@@ -233,7 +256,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 220 <= h <= 230:
             return -h / 10 + 23
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_blue(h: float) -> float:
@@ -253,7 +276,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 250 <= h <= 260:
             return -h / 10 + 26
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_bluemagenta(h: float) -> float:
@@ -273,7 +296,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 280 <= h <= 290:
             return -h / 10 + 29
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_magenta(h: float) -> float:
@@ -293,7 +316,7 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 310 <= h <= 320:
             return -h / 10 + 32
         else:
-            return 0
+            return 0.0
 
     @staticmethod
     def __fuzzy_trapezoidal_magentared(h: float) -> float:
@@ -313,4 +336,4 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elif 340 <= h <= 350:
             return -h / 10 + 35
         else:
-            return 0
+            return 0.0

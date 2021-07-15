@@ -33,11 +33,11 @@ class Segmentator:
         if method == SegmentationAlgorithm.FUZZY_SET_AMANTE:
             return self.__segment_with_amante_trapezoidal(**kwargs)
         elif method == SegmentationAlgorithm.FUZZY_SET_CHAMORRO:
-            return self.__segment_with_chamorro_trapezoidal()
+            return self.__segment_with_chamorro_trapezoidal(**kwargs)
         elif method == SegmentationAlgorithm.FUZZY_SET_LIU:
             return self.__segment_with_liu_trapezoidal()
         elif method == SegmentationAlgorithm.FUZZY_SET_SHAMIR:
-            return self.__segment_with_shamir_triangular()
+            return self.__segment_with_shamir_triangular(**kwargs)
 
     def __segment_with_amante_trapezoidal(self, **kwargs) -> SegmentationResult:
         """
@@ -46,12 +46,12 @@ class Segmentator:
         fuzzy_set_amante_segmentator = AmanteTrapezoidalSegmentator(image=self.__image)
         return fuzzy_set_amante_segmentator.segment(**kwargs)
 
-    def __segment_with_chamorro_trapezoidal(self) -> SegmentationResult:
+    def __segment_with_chamorro_trapezoidal(self, **kwargs) -> SegmentationResult:
         """
         Segments the image with the Chamorro et al fuzzy sets.
         """
         fuzzy_set_chamorro_segmentator = ChamorroTrapezoidalSegmentator(image=self.__image)
-        return fuzzy_set_chamorro_segmentator.segment()
+        return fuzzy_set_chamorro_segmentator.segment(**kwargs)
 
     def __segment_with_liu_trapezoidal(self) -> SegmentationResult:
         """
@@ -60,9 +60,9 @@ class Segmentator:
         fuzzy_set_liu_segmentator = LiuWangTrapezoidalSegmentator(image=self.__image)
         return fuzzy_set_liu_segmentator.segment()
 
-    def __segment_with_shamir_triangular(self) -> SegmentationResult:
+    def __segment_with_shamir_triangular(self, **kwargs) -> SegmentationResult:
         """
         Segments the image with the Shamir fuzzy sets.
         """
         fuzzy_set_shamir_segmentator = ShamirTriangularSegmentator(image=self.__image)
-        return fuzzy_set_shamir_segmentator.segment()
+        return fuzzy_set_shamir_segmentator.segment(**kwargs)
