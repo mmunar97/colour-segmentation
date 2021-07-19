@@ -1,3 +1,3 @@
 <p align="center">
-  <img src="colour_segmentation/docs/colour_segmentation_logo.png" height="300">
+  <img src="colour_segmentation/docs/colour_segmentation_logo.png" height="500">
 </p>
