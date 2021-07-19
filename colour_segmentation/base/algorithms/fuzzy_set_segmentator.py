@@ -53,27 +53,28 @@ class FuzzySetSegmentator:
 
         return segmentation[:, :, ::-1]
 
-    def get_red_proportion(self, segmentation: numpy.ndarray, red_representation=None):
+    def get_red_proportion(self, colour_classes: numpy.ndarray, red_label=None):
         """
         Computes the proportion of red pixels in the segmentation.
 
         Args:
-            segmentation: A three-dimensional numpy array, representing the segmented image. Each entry contains the
-                          representation colour of the original pixel.
-            red_representation: A list of integers, representing the RGB representation of the red colour.
+            colour_classes: A two-dimensional numpy array, representing the segmented image. Each entry contains
+                            the label associated to each colour.
+            red_label: An integer, representing the label associated to the red colour.
 
         Returns:
             A float, representing the proportion of redness.
         """
-        if red_representation is None:
-            red_representation = [255, 33, 36]
+        if red_label is None:
+            red_label = 0
 
-        red_pixels = numpy.any(segmentation == red_representation, axis=-1)
-        return red_pixels.sum() / (segmentation.shape[0] * segmentation.shape[1])
+        red_pixels = colour_classes == red_label
+        return red_pixels.sum() / (red_pixels.shape[0] * red_pixels.shape[1])
 
     @staticmethod
     def draw_achromatic_classes(s_channel: numpy.ndarray, v_channel: numpy.ndarray,
-                                chromatic_segmentation: numpy.ndarray):
+                                chromatic_segmentation: numpy.ndarray,
+                                colour_classes_segmentation: numpy.ndarray):
         """
         Draws over the segmented image the achromatic colours. The definition of achromatic colours is given in Amante
         et al.
@@ -87,20 +88,27 @@ class FuzzySetSegmentator:
             s_channel: A two-dimensional numpy array, representing the saturation channel of the HSV colour space.
             v_channel: A two-dimensional numpy array, representing the intensity channel of the HSV colour space.
             chromatic_segmentation: A three-dimensional numpy array, representing the chromatic segmentation.
+            colour_classes_segmentation: A two-dimensional numpy array, representing the class label of the chromatic
+                                         segmentation.
 
         Returns:
             A three-dimensional numpy array, representing the chromatic segmentation including the achromatic colours.
         """
+        chr_segm = chromatic_segmentation.copy()
+        classes = colour_classes_segmentation.copy()
 
         black_pixels = FuzzySetSegmentator.__get_black_pixels(v_channel)
         gray_pixels = FuzzySetSegmentator.__get_gray_pixels(s_channel, v_channel)
         white_pixels = FuzzySetSegmentator.__get_white_pixels(s_channel, v_channel)
 
-        chromatic_segmentation[black_pixels, :] = [0, 0, 0]
-        chromatic_segmentation[white_pixels, :] = [255, 255, 255]
-        chromatic_segmentation[gray_pixels, :] = [128, 128, 128]
+        chr_segm[black_pixels, :] = [0, 0, 0]
+        classes[black_pixels] = -1
+        chr_segm[white_pixels, :] = [255, 255, 255]
+        classes[white_pixels] = -2
+        chr_segm[gray_pixels, :] = [128, 128, 128]
+        classes[gray_pixels] = -3
 
-        return chromatic_segmentation
+        return chr_segm, classes
 
     @staticmethod
     def __get_white_pixels(s_channel: numpy.ndarray, v_channel: numpy.ndarray) -> numpy.ndarray:

@@ -4,18 +4,17 @@ from colour_segmentation.base.segmentation_algorithm import SegmentationAlgorith
 from colour_segmentation.segmentator import Segmentator
 
 if __name__ == "__main__":
-
-    #image = cv2.imread(r"assets/tree.jpg")
+    # image = cv2.imread(r"assets/tree.jpg")
     image = cv2.imread(r"assets/nectarine.jpg")
 
     segmentator = Segmentator(image=image)
 
+    result_liu = segmentator.segment(method=SegmentationAlgorithm.FUZZY_SET_LIU,
+                                     apply_colour_correction=False,
+                                     remove_achromatic_colours=True)
     result_liu_corrected = segmentator.segment(method=SegmentationAlgorithm.FUZZY_SET_LIU,
                                                apply_colour_correction=True,
                                                remove_achromatic_colours=True)
-    result_liu = segmentator.segment(method=SegmentationAlgorithm.FUZZY_SET_LIU,
-                                     apply_colour_correction=False,
-                                     remove_achromatic_colours=False)
 
     result_amante_fonseca_chr = segmentator.segment(method=SegmentationAlgorithm.FUZZY_SET_AMANTE,
                                                     remove_achromatic_colours=True)

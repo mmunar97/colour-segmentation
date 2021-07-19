@@ -71,21 +71,22 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
 
         memberships = numpy.stack([red_membership, orange_membership, yellow_membership, green_membership,
                                    cyan_membership, blue_membership, purple_membership], axis=2)
-
-        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+        colour_classes = memberships.argmax(axis=2)
+        segmentation = self.draw_class_segmentation(classification=colour_classes)
 
         if remove_achromatic_colours:
             s_channel = hsv_image[:, :, 1]
             v_channel = hsv_image[:, :, 2]
 
-            segmentation = self.draw_achromatic_classes(s_channel=s_channel,
-                                                        v_channel=v_channel,
-                                                        chromatic_segmentation=segmentation)
+            segmentation, colour_classes = self.draw_achromatic_classes(s_channel=s_channel,
+                                                                        v_channel=v_channel,
+                                                                        chromatic_segmentation=segmentation,
+                                                                        colour_classes_segmentation=colour_classes)
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
                                   elapsed_time=elapsed_time,
-                                  red_proportion=self.get_red_proportion(segmentation))
+                                  red_proportion=self.get_red_proportion(colour_classes))
 
     def __apply_color_correction(self):
         """
@@ -106,7 +107,7 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         green_channel = image[:, :, 1]
         blue_channel = image[:, :, 2]
 
-        balance_average = (numpy.mean(red_channel)+numpy.mean(green_channel)+numpy.mean(blue_channel))/3
+        balance_average = (numpy.mean(red_channel) + numpy.mean(green_channel) + numpy.mean(blue_channel)) / 3
 
         balanced_red = (balance_average / numpy.mean(red_channel)) * red_channel
         balanced_red[balanced_red > 1] = 1
@@ -159,11 +160,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 10 or 55 < h <= 360:
             return 0.0
         elif 10 < h <= 20:
-            return 0.1*h-1
+            return 0.1 * h - 1
         elif 20 < h <= 40:
             return 1.0
         elif 40 < h <= 55:
-            return -h/15+11/3
+            return -h / 15 + 11 / 3
 
     @staticmethod
     def __fuzzy_trapezoidal_yellow(h: float) -> float:
@@ -183,11 +184,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 40 or 80 < h <= 360:
             return 0.0
         elif 40 < h <= 55:
-            return h/15-8/3
+            return h / 15 - 8 / 3
         elif 55 < h <= 65:
             return 1.0
         elif 65 < h <= 80:
-            return -h/15+11/3
+            return -h / 15 + 11 / 3
 
     @staticmethod
     def __fuzzy_trapezoidal_green(h: float) -> float:
@@ -207,11 +208,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 65 or 170 < h <= 360:
             return 0.0
         elif 65 < h <= 80:
-            return h/15-8/3
+            return h / 15 - 8 / 3
         elif 80 < h <= 140:
             return 1.0
         elif 140 < h <= 170:
-            return -h/30+17/3
+            return -h / 30 + 17 / 3
 
     @staticmethod
     def __fuzzy_trapezoidal_cyan(h: float) -> float:
@@ -231,11 +232,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 140 or 210 < h <= 360:
             return 0.0
         elif 140 < h <= 170:
-            return h/30-14/3
+            return h / 30 - 14 / 3
         elif 170 < h <= 200:
             return 1.0
         elif 200 < h <= 210:
-            return -h/10+21
+            return -h / 10 + 21
 
     @staticmethod
     def __fuzzy_trapezoidal_blue(h: float) -> float:
@@ -255,11 +256,11 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 200 or 270 < h <= 360:
             return 0.0
         elif 200 <= h <= 210:
-            return h/10-20
+            return h / 10 - 20
         elif 210 <= h <= 250:
             return 1.0
         elif 250 <= h <= 270:
-            return -h/20+27/2
+            return -h / 20 + 27 / 2
 
     @staticmethod
     def __fuzzy_trapezoidal_purple(h: float) -> float:
@@ -279,8 +280,8 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         if 0 <= h <= 250 or 330 < h <= 360:
             return 0.0
         elif 250 < h <= 270:
-            return h/20-5/4
+            return h / 20 - 5 / 4
         elif 270 < h <= 300:
             return 1.0
         elif 300 < h <= 330:
-            return -h/30+11
+            return -h / 30 + 11

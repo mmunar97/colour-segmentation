@@ -69,22 +69,23 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         memberships = numpy.stack([red_membership, darkorange_membership, lightorange_membership, yellow_membership,
                                    lightgreen_membership, darkgreen_membership, aqua_membership,
                                    blue_membership, darkpurple_membership, lightpurple_membership], axis=2)
-
-        segmentation = self.draw_class_segmentation(classification=memberships.argmax(axis=2))
+        colour_classes = memberships.argmax(axis=2)
+        segmentation = self.draw_class_segmentation(classification=colour_classes)
 
         if remove_achromatic_colours:
             s_channel = (hsv_image[:, :, 1].astype(float)) / 255
             v_channel = (hsv_image[:, :, 2].astype(float)) / 255
 
-            segmentation = self.draw_achromatic_classes(s_channel=s_channel,
-                                                        v_channel=v_channel,
-                                                        chromatic_segmentation=segmentation)
+            segmentation, colour_classes = self.draw_achromatic_classes(s_channel=s_channel,
+                                                                        v_channel=v_channel,
+                                                                        chromatic_segmentation=segmentation,
+                                                                        colour_classes_segmentation=colour_classes)
 
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
                                   elapsed_time=elapsed_time,
-                                  red_proportion=self.get_red_proportion(segmentation))
+                                  red_proportion=self.get_red_proportion(colour_classes))
 
     @staticmethod
     def __fuzzy_triangular_red(h: float) -> float:
