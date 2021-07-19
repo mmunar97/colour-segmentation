@@ -4,7 +4,7 @@
 
 **ColourSegmentation** is a library for chromatic segmentation from a colour palette, written in pure Python.
 
-When you have to segment an image into the colours that appear in the scene, or you want to determine the dominant colour among a palette of colours, you need sophisticated methods that can handle the uncertainty of colour selection. Colour Segmentation offers the implementation of four colour palettes and colour classification using fuzzy logic.
+When you have to segment an image into the colours that appear in the scene, or you want to determine the dominant colour among a palette of colours, you need sophisticated methods that can handle the uncertainty of colour selection. **ColourSegmentation** offers the implementation of four colour palettes and colour classification using fuzzy logic.
 
 ## Documentation
 
