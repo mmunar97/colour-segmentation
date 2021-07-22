@@ -3,29 +3,37 @@ import time
 import numpy
 
 from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
+from colour_segmentation.base.exceptions.FuzzyPaletteInvalidRepresentation import FuzzyPaletteInvalidRepresentation
 from colour_segmentation.base.segmentation_result import SegmentationResult
+from typing import Dict
 
 
 class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
 
-    def __init__(self, image: numpy.ndarray):
+    def __init__(self, image: numpy.ndarray, labels_representation: Dict = None):
         """
         Initializes the object that segments a given image with the Liu-Wang fuzzy sets.
 
         Args:
             image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
+            labels_representation: A dictionary, representing the palette of colours associated to the Amante-Fonseca
+                                   fuzzy sets.
         """
+        if not labels_representation:
+            labels_representation = {0: numpy.array([255, 33, 36]),
+                                     1: numpy.array([248, 149, 29]),
+                                     2: numpy.array([239, 233, 17]),
+                                     3: numpy.array([105, 189, 69]),
+                                     4: numpy.array([111, 204, 221]),
+                                     5: numpy.array([59, 83, 164]),
+                                     6: numpy.array([158, 80, 159])}
+
+        if len(labels_representation.keys()) != 7:
+            raise FuzzyPaletteInvalidRepresentation(provided_labels=len(labels_representation.keys()), needed_labels=7)
+
         super(LiuWangTrapezoidalSegmentator, self).__init__(image=image,
-                                                            class_representation={
-                                                                0: numpy.array([255, 33, 36]),
-                                                                1: numpy.array([248, 149, 29]),
-                                                                2: numpy.array([239, 233, 17]),
-                                                                3: numpy.array([105, 189, 69]),
-                                                                4: numpy.array([111, 204, 221]),
-                                                                5: numpy.array([59, 83, 164]),
-                                                                6: numpy.array([158, 80, 159])
-                                                            })
+                                                            class_representation=labels_representation)
 
     def segment(self, apply_colour_correction: bool = True,
                 remove_achromatic_colours: bool = True) -> SegmentationResult:
@@ -85,8 +93,8 @@ class LiuWangTrapezoidalSegmentator(FuzzySetSegmentator):
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
-                                  elapsed_time=elapsed_time,
-                                  red_proportion=self.get_red_proportion(colour_classes))
+                                  segmented_classes=colour_classes,
+                                  elapsed_time=elapsed_time)
 
     def __apply_color_correction(self):
         """

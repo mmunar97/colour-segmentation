@@ -3,12 +3,14 @@ import numpy
 import time
 
 from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
+from colour_segmentation.base.exceptions.FuzzyPaletteInvalidRepresentation import FuzzyPaletteInvalidRepresentation
 from colour_segmentation.base.segmentation_result import SegmentationResult
+from typing import Dict
 
 
 class ShamirTriangularSegmentator(FuzzySetSegmentator):
 
-    def __init__(self, image: numpy.ndarray):
+    def __init__(self, image: numpy.ndarray, labels_representation: Dict = None):
         """
         Initializes the object that segments a given image with the Shamir fuzzy sets.
 
@@ -16,19 +18,23 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
             image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
         """
+        if not labels_representation:
+            labels_representation = {0: numpy.array([255, 33, 36]),
+                                     1: numpy.array([255, 140, 0]),
+                                     2: numpy.array([255, 165, 0]),
+                                     3: numpy.array([255, 255, 0]),
+                                     4: numpy.array([144, 238, 144]),
+                                     5: numpy.array([0, 100, 0]),
+                                     6: numpy.array([0, 255, 255]),
+                                     7: numpy.array([0, 0, 255]),
+                                     8: numpy.array([128, 0, 128]),
+                                     9: numpy.array([255, 0, 255])}
+
+        if len(labels_representation.keys()) != 10:
+            raise FuzzyPaletteInvalidRepresentation(provided_labels=len(labels_representation.keys()), needed_labels=10)
+
         super(ShamirTriangularSegmentator, self).__init__(image=image,
-                                                          class_representation={
-                                                              0: numpy.array([255, 33, 36]),
-                                                              1: numpy.array([255, 140, 0]),
-                                                              2: numpy.array([255, 165, 0]),
-                                                              3: numpy.array([255, 255, 0]),
-                                                              4: numpy.array([144, 238, 144]),
-                                                              5: numpy.array([0, 100, 0]),
-                                                              6: numpy.array([0, 255, 255]),
-                                                              7: numpy.array([0, 0, 255]),
-                                                              8: numpy.array([128, 0, 128]),
-                                                              9: numpy.array([255, 0, 255]),
-                                                          })
+                                                          class_representation=labels_representation)
 
     def segment(self, remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
@@ -84,8 +90,8 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
-                                  elapsed_time=elapsed_time,
-                                  red_proportion=self.get_red_proportion(colour_classes))
+                                  segmented_classes=colour_classes,
+                                  elapsed_time=elapsed_time)
 
     @staticmethod
     def __fuzzy_triangular_red(h: float) -> float:

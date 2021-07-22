@@ -1,36 +1,44 @@
 import cv2
 import numpy
 import time
-from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
 
+from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
+from colour_segmentation.base.exceptions.FuzzyPaletteInvalidRepresentation import FuzzyPaletteInvalidRepresentation
 from colour_segmentation.base.segmentation_result import SegmentationResult
+from typing import Dict
 
 
 class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
 
-    def __init__(self, image: numpy.ndarray):
+    def __init__(self, image: numpy.ndarray, labels_representation: Dict = None):
         """
         Initializes the object that segments a given image with the Amante-Fonseca fuzzy sets.
 
         Args:
             image: A three-dimensional numpy array, representing the image to be segmented which entries are in 0...255
                    range and the channels are BGR.
+            labels_representation: A dictionary, representing the palette of colours associated to the Amante-Fonseca
+                                   fuzzy sets.
         """
+        if not labels_representation:
+            labels_representation = {0: numpy.array([255, 33, 36]),
+                                     1: numpy.array([255, 148, 9]),
+                                     2: numpy.array([255, 255, 13]),
+                                     3: numpy.array([186, 255, 15]),
+                                     4: numpy.array([6, 155, 9]),
+                                     5: numpy.array([12, 255, 116]),
+                                     6: numpy.array([11, 254, 255]),
+                                     7: numpy.array([8, 192, 255]),
+                                     8: numpy.array([0, 0, 255]),
+                                     9: numpy.array([92, 8, 253]),
+                                     10: numpy.array([238, 3, 249]),
+                                     11: numpy.array([254, 6, 180])}
+
+        if len(labels_representation.keys()) != 12:
+            raise FuzzyPaletteInvalidRepresentation(provided_labels=len(labels_representation.keys()), needed_labels=12)
+
         super(ChamorroTrapezoidalSegmentator, self).__init__(image=image,
-                                                             class_representation={
-                                                                 0: numpy.array([255, 33, 36]),
-                                                                 1: numpy.array([255, 148, 9]),
-                                                                 2: numpy.array([255, 255, 13]),
-                                                                 3: numpy.array([186, 255, 15]),
-                                                                 4: numpy.array([6, 155, 9]),
-                                                                 5: numpy.array([12, 255, 116]),
-                                                                 6: numpy.array([11, 254, 255]),
-                                                                 7: numpy.array([8, 192, 255]),
-                                                                 8: numpy.array([0, 0, 255]),
-                                                                 9: numpy.array([92, 8, 253]),
-                                                                 10: numpy.array([238, 3, 249]),
-                                                                 11: numpy.array([254, 6, 180])
-                                                             })
+                                                             class_representation=labels_representation)
 
     def segment(self, remove_achromatic_colours: bool = True) -> SegmentationResult:
         """
@@ -96,8 +104,8 @@ class ChamorroTrapezoidalSegmentator(FuzzySetSegmentator):
         elapsed_time = elapsed_time - time.time()
 
         return SegmentationResult(segmented_image=segmentation,
-                                  elapsed_time=elapsed_time,
-                                  red_proportion=self.get_red_proportion(colour_classes))
+                                  segmented_classes=colour_classes,
+                                  elapsed_time=elapsed_time)
 
     @staticmethod
     def __fuzzy_trapezoidal_red(h: float) -> float:

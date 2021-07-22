@@ -1,7 +1,7 @@
 import numpy
 
 from skimage import img_as_float
-from typing import Dict, List
+from typing import Dict
 
 from colour_segmentation.base.segmentation_result import SegmentationResult
 
@@ -52,24 +52,6 @@ class FuzzySetSegmentator:
             segmentation[classification == class_value] = self.class_representation[class_value]
 
         return segmentation[:, :, ::-1]
-
-    def get_red_proportion(self, colour_classes: numpy.ndarray, red_label=None):
-        """
-        Computes the proportion of red pixels in the segmentation.
-
-        Args:
-            colour_classes: A two-dimensional numpy array, representing the segmented image. Each entry contains
-                            the label associated to each colour.
-            red_label: An integer, representing the label associated to the red colour.
-
-        Returns:
-            A float, representing the proportion of redness.
-        """
-        if red_label is None:
-            red_label = 0
-
-        red_pixels = colour_classes == red_label
-        return red_pixels.sum() / (red_pixels.shape[0] * red_pixels.shape[1])
 
     @staticmethod
     def draw_achromatic_classes(s_channel: numpy.ndarray, v_channel: numpy.ndarray,

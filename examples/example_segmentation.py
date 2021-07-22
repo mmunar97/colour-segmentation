@@ -1,11 +1,17 @@
 import cv2
+import numpy
 
 from colour_segmentation.base.segmentation_algorithm import SegmentationAlgorithm
 from colour_segmentation.segmentator import Segmentator
 
+
+def load_trial_image(image_name: str) -> numpy.ndarray:
+    return cv2.imread(rf"assets/{image_name}")
+
+
 if __name__ == "__main__":
-    # image = cv2.imread(r"assets/tree.jpg")
-    image = cv2.imread(r"assets/nectarine.jpg")
+    # image = load_trial_image("tree.jpg")
+    image = load_trial_image("nectarine.jpg")
 
     segmentator = Segmentator(image=image)
 
