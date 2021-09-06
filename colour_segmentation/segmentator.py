@@ -22,7 +22,7 @@ class Segmentator:
 
     def segment(self, method: SegmentationAlgorithm, **kwargs) -> SegmentationResult:
         """
-        Segments the image with a certain method.
+        Segments the image with the selected method.
 
         Args:
             method: A SegmentationAlgorithm value, representing the method to be used.

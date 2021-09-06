@@ -43,6 +43,11 @@ class ShamirTriangularSegmentator(FuzzySetSegmentator):
         Args:
             remove_achromatic_colours: A boolean, indicating if the achromatic colours have to be removed in the image.
 
+        References:
+            Shamir, L. (2006)
+            Human Perception-based Color Segmentation Using Fuzzy Logic.
+            Proceedings of International Conference on Image Processing, Computer Vision, & Pattern Recognition.
+
         Returns:
             A SegmentationResult object, containing the classification of each pixel and the elapsed time.
         """

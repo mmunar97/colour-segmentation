@@ -16,13 +16,14 @@ class SegmentationResult:
 
     def get_colour_proportion(self, colour_label=None):
         """
-        Computes the proportion of red pixels in the segmentation.
+        Computes the proportion of pixels in the segmentation with a certain class..
 
         Args:
-            colour_label: An integer, representing the label associated to the red colour.
+            colour_label: An integer, representing the label associated to the red colour. If None,
+                          the label 0 is set by default.
 
         Returns:
-            A float, representing the proportion of redness.
+            A float, representing the proportion of pixels whose associated class is colour_label.
         """
         if colour_label is None:
             colour_label = 0
