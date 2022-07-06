@@ -36,3 +36,4 @@ if __name__ == "__main__":
                                             remove_achromatic_colours=True)
     result_shamir_achr = segmentator.segment(method=SegmentationAlgorithm.FUZZY_SET_SHAMIR,
                                              remove_achromatic_colours=False)
+

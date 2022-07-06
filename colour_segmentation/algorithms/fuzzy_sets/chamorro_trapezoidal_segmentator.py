@@ -3,7 +3,7 @@ import numpy
 import time
 
 from colour_segmentation.base.algorithms.fuzzy_set_segmentator import FuzzySetSegmentator
-from colour_segmentation.base.exceptions.FuzzyPaletteInvalidRepresentation import FuzzyPaletteInvalidRepresentation
+from colour_segmentation.base.exceptions.fuzzy_palette_invalid_representation import FuzzyPaletteInvalidRepresentation
 from colour_segmentation.base.segmentation_result import SegmentationResult
 from typing import Dict
 
